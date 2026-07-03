@@ -13,10 +13,10 @@ env:
   AZURE_WEBAPP_NAME: time-service
   AZURE_WEBAPP_PACKAGE_PATH: './publish'
   DOTNET_VERSION: '6.x'
-  SOLUTION_PATH: 'BlazorApp1.sln'
+  SOLUTION_PATH: './BlazorApp1/BlazorApp1.sln'
   API_PROJECT_PATH: 'Time.Api'
   PUBLISH_DIR: './publish'
-
+  
 # Define the separate jobs that make up this workflow
 jobs:
   # First job: build and test the application
