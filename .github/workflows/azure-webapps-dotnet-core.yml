@@ -46,7 +46,7 @@ jobs:
       #     --verbosity normal
 
       - name: Publish
-        run: dotnet publish ${{ env.PROJECT_PATH }} --configuration Release --no-restore --no-build --property:PublishDir=${{ env.PUBLISH_DIR }}
+        run: dotnet publish ${{ env.PROJECT_PATH }} --configuration Release --no-restore -output ${{ env.PUBLISH_DIR }}
 
     # Store the published output as an artifact for later jobs
       - name: Publish Artifacts
