@@ -1,0 +1,70 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+# trigger:
+#  branches:
+#   include:
+#     -master
+
+
+trigger:
+# - master
+ - none
+
+pool:
+ vmImage: 'windows-latest'
+
+variables:
+ buildPlatform: 'Any CPU'
+ buildConfiguration: 'Release'
+ solution: '**/Project'
+ project:  '**/Project'
+
+steps:
+- task: DotNetCoreCLI@2
+  displayName: Test
+  inputs:
+    command: 'test'
+    projects:  '**/*.csproj' #'**/*Tests/*.csproj'
+    arguments: '--configuration $(buildConfiguration)'
+
+- task: DotNetCoreCLI@2
+  displayName: Build
+  inputs:
+    command: build
+    projects: '**/*.csproj'
+    arguments: '--configuration $(buildConfiguration)' # Update this to match your need
+
+- task: DotNetCoreCLI@2
+  displayName: Publish
+  inputs:
+    command: publish
+    publishWebProjects: True
+    arguments: '--configuration $(BuildConfiguration) --output $(Build.ArtifactStagingDirectory)'
+    zipAfterPublish: True
+
+# this code takes all the files in $(Build.ArtifactStagingDirectory) and uploads them as an artifact of your build.
+- task:  PublishBuildArtifacts@1 
+  displayName: Publish_myWebsiteName
+  inputs:
+    targetPath: '$(Build.ArtifactStagingDirectory)' 
+    artifactName: 'myWebsiteName'
+- task: DownloadBuildArtifacts@1
+  inputs:
+    buildType: 'current'
+    downloadType: 'single'
+    artifactName: 'myWebsiteName'
+    downloadPath: '$(Build.ArtifactStagingDirectory)'
+
+#pool:
+#  vmImage: ubuntu-latest
+
+# steps:
+# - script: echo Hello, world!
+#   displayName: 'Run a one-line script'
+
+# - script: |
+ #    echo Add other tasks to build, test, and deploy your project.
+ #    echo See https://aka.ms/yaml
+ #  displayName: 'Run a multi-line script'

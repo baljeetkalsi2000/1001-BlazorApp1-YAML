@@ -1,0 +1,110 @@
+# Publish Pipeline Artifact Data Test -See output of Publish Artifact
+# Build and Publish project included 
+
+trigger:
+#- master
+- none
+
+variables:
+ system.debug: true
+
+pool:
+  vmImage: ubuntu-latest
+
+steps:
+- task: DotNetCoreCLI@2
+  displayName: Task**Build
+  inputs:
+    command: 'build'
+    projects: '**/*.csproj'
+    arguments: '--configuration Release' # Update this to match your need
+
+- task: DotNetCoreCLI@2
+  displayName: Publish**Publish
+  inputs:
+    command: 'publish'
+    publishWebProjects: true
+    zipAfterPublish: True
+    arguments: '--configuration Release --output $(Build.ArtifactStagingDirectory)'
+
+# Publish build artifacts v1
+# Publish build artifacts to Azure Pipelines or a Windows file share.
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish-BuildArtifacts-1-TO-DropList'
+  inputs:
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)' 
+    # string. Required. Path to publish. Default: $(Build.ArtifactStagingDirectory).
+    ArtifactName: 'PublishBuildDrop1' 
+    # string. Required. Artifact name. Default: drop.
+    publishLocation: 'Container' 
+    # 'Container' | 'FilePath'. Alias: ArtifactType. Required. Artifact publish location. Default: Container.
+    #TargetPath: # string. Required when ArtifactType = FilePath. File share path. 
+    #Parallel: false # boolean. Optional. Use when ArtifactType = FilePath. Parallel copy. Default: false.
+    #ParallelCount: '8' # string. Optional. Use when ArtifactType = FilePath && Parallel = true. Parallel count. Default: 8.
+  # Advanced
+    #FileCopyOptions: # string. Optional. Use when ArtifactType = FilePath. File copy options. 
+    #StoreAsTar: false # boolean. Tar the artifact before uploading. Default: false.
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish-BuildArtifacts-2-TO-DropList'
+  inputs:
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)' 
+    # string. Required. Path to publish. Default: $(Build.ArtifactStagingDirectory).
+    ArtifactName: 'PublishBuildDrop2' 
+    # string. Required. Artifact name. Default: drop.
+    publishLocation: 'Container' 
+  
+  # Download build artifacts v1
+# Download files that were saved as artifacts of a completed build.
+- task: DownloadBuildArtifacts@1
+  displayName: DownloadBuildArtifacts@1
+  inputs:
+    buildType: 'current' 
+    # 'current' | 'specific'. Required. Download artifacts produced by. Default: current.
+    #project: # string. Required when buildType == specific. Project. 
+    #pipeline: # string. Alias: definition. Required when buildType == specific. Build pipeline. 
+    #specificBuildWithTriggering: false # boolean. Optional. Use when buildType == specific. When appropriate, download artifacts from the triggering build. Default: false.
+    #buildVersionToDownload: 'latest' # 'latest' | 'latestFromBranch' | 'specific'. Required when buildType == specific. Build version to download. Default: latest.
+    #allowPartiallySucceededBuilds: false # boolean. Optional. Use when buildType == specific && buildVersionToDownload != specific. Download artifacts even from partially succeeded builds. Default: false.
+    #branchName: 'refs/heads/master' # string. Required when buildType == specific && buildVersionToDownload == latestFromBranch. Branch name. Default: refs/heads/master.
+    #buildId: # string. Required when buildType == specific && buildVersionToDownload == specific. Build. 
+    #tags: # string. Optional. Use when buildType == specific && buildVersionToDownload != specific. Build Tags. 
+    downloadType: 'single' 
+    # 'single' | 'specific'. Required. Download type. Default: single.
+    artifactName: 'PublishBuildDrop2'
+    # string. Required when downloadType == single. Artifact name. 
+    #itemPattern: '**' # string. Matching pattern. Default: **.
+    downloadPath: '$(System.DefaultWorkingDirectory)/System_DefaultWorkingDirectory/' 
+- task: PublishPipelineArtifact@1
+  displayName: Publish*PipelineArtifact-1
+  inputs:
+    targetPath: '$(Pipeline.Workspace)'
+    artifact: 'PipelineArtifact'
+    publishLocation: 'pipeline'
+- task: DownloadPipelineArtifact@2
+  displayName: Download*PipelineArtifact
+  inputs:
+    buildType: 'current'
+    artifactName: 'PipelineArtifact'
+    targetPath: '$(System.DefaultWorkingDirectory)/Pipeline_DownloadArtifact/' 
+
+- task: PublishPipelineArtifact@1
+  displayName: Publish*PipelineArtifact-2
+  inputs:
+    targetPath: '$(Pipeline.Workspace)'
+    artifact: 'PipelineArtifact2'
+    publishLocation: 'pipeline'
+
+- task: PowerShell@2
+  displayName: 'Debug Parameters'
+  inputs:
+    targetType: Inline
+    script: |
+      Write-Host "Pipeline.Workspace: $(Pipeline.Workspace)"
+      Write-Host "Build.ArtifactStagingDirectory: $(Build.ArtifactStagingDirectory)"
+      Write-Host "Build.StagingDirectory: $(Build.StagingDirectory)"
+      Write-Host "System.DefaultWorkingDirectory: $(System.DefaultWorkingDirectory)"
+      Write-Host "System.ArtifactsDirectory: $(System.ArtifactsDirectory)"
+      
+      
+
+  
