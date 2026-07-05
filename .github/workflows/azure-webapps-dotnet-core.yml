@@ -83,6 +83,19 @@ jobs:
           name: webapp
           path: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
 
+  GetVariable:
+    name: Get Variable
+    runs-on: ubuntu-latest
+    environment: dev
+    needs: [deploy2] # This job depends on the build-and-test job
+
+    steps:
+      - name: Get Env Variable Data
+        run: echo "Dev Environment Variable data ${{ vars.DEV_VAR }}"
+      - name: Get Env From Action Secret
+        run: echo "Action Variable data from ${{ vars.ACTIONS_SECRETS }}"
+      
+
   #     # Deploy to Azure App Service using publish profile credentials
   #     - name: Deploy
   #       uses: azure/webapps-deploy@v2
