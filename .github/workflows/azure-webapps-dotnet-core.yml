@@ -86,7 +86,7 @@ jobs:
   GetVariable:
     name: Get Variable
     runs-on: ubuntu-latest
-    environment: dev
+    # environment: dev
     needs: [deploy2] # This job depends on the build-and-test job
 
     steps:
