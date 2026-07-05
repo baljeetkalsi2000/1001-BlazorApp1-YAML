@@ -86,7 +86,7 @@ jobs:
   GetVariable:
     name: Get Variable
     runs-on: ubuntu-latest
-    # environment: dev
+    environment: dev
     needs: [deploy2] # This job depends on the build-and-test job
 
     steps:
@@ -94,6 +94,8 @@ jobs:
         run: echo "Dev Environment Variable data ${{ vars.DEV_VAR }}"
       - name: Get Env From Action Secret
         run: echo "Action Variable data from ${{ vars.ACTION_GLOBAL_VAR }}"
+      - name: Get Env From Repo Secret
+        run: echo "Repo Secret ${{ secrets.ACTIONS_SECRETS}}"
       
 
   #     # Deploy to Azure App Service using publish profile credentials
