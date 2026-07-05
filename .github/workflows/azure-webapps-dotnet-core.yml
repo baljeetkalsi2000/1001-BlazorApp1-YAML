@@ -93,7 +93,7 @@ jobs:
       - name: Get Env Variable Data
         run: echo "Dev Environment Variable data ${{ vars.DEV_VAR }}"
       - name: Get Env From Action Secret
-        run: echo "Action Variable data from ${{ vars.ACTIONS_SECRETS }}"
+        run: echo "Action Variable data from ${{ vars.ACTION_GLOBAL_VAR }}"
       
 
   #     # Deploy to Azure App Service using publish profile credentials
