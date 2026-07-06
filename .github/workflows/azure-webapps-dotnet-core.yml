@@ -7,7 +7,7 @@ on:
   push:
     branches:
       - main # Run automatically when code is pushed to main branch
-
+  
 # Environment variables used throughout the workflow
 env:
   AZURE_WEBAPP_NAME: time-service
@@ -16,7 +16,10 @@ env:
   SOLUTION_PATH: './BlazorApp1/BlazorApp1.sln'
   PROJECT_PATH: './BlazorApp1/BlazorApp1/BlazorApp1.csproj'
   PUBLISH_DIR: './publish'
-  
+
+permissions:
+  id-token: write
+  contents: read
 # Define the separate jobs that make up this workflow
 jobs:
   # First job: build and test the application
