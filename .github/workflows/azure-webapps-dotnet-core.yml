@@ -119,7 +119,7 @@ jobs:
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v3
         with:
-          app-name: 'webapp'
+          app-name: 'DevopsNet'
           package: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }} # Path to your built application files      
       
 
