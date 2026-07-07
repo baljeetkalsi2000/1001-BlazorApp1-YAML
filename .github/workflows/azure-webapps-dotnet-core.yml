@@ -116,6 +116,14 @@ jobs:
       - name: Get Env From Repo Secret
         run: echo "Repo Secret ${{ secrets.ACTIONS_SECRETS}}"
 
+      - name: Pull Vault Secrets
+        uses: azure/get-keyvault-secrets@v1
+        id: kv-secrets
+        with:
+          keyvault: 'KeyVaultDevOps-Git' # Replace with your Key Vault name
+          secrets: |
+            Secrets1              
+
       # 1. Log in securely to Azure without long-lived credentials
       - name: Authenticate to Azure via OIDC
         uses: azure/login@v2
@@ -123,7 +131,15 @@ jobs:
           client-id: ${{ vars.AZURE_CLIENT_ID }}
           tenant-id: ${{ vars.AZURE_TENANT_ID }}
           subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
-
+      
+      # 1. Log in to Azure completely passwordless using OIDC
+      - name: Az CLI Login via OIDC
+        uses: azure/login@v2
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+      
       # 2. Fetch runtime parameters directly from Key Vault
       - name: Pull Vault Secrets
         uses: azure/get-keyvault-secrets@v1
