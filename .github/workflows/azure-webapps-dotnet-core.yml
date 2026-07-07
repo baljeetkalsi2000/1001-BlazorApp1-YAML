@@ -140,14 +140,7 @@ jobs:
           tenant-id: ${{ vars.AZURE_TENANT_ID }}
           subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
       
-      # 2. Fetch runtime parameters directly from Key Vault
-      - name: Pull Vault Secrets
-        uses: azure/get-keyvault-secrets@v1
-        id: kv-secrets
-        with:
-          keyvault: 'KeyVaultDevOps-Git' # Replace with your Key Vault name
-          secrets: |
-            Secrets1            
+
   
   # deployFinal:
   #   runs-on: ubuntu-latest
