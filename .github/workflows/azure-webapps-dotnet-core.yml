@@ -1,5 +1,5 @@
 # Name of the workflow as it appears in GitHub Actions UI
-name: Build and Deploy (Az CLI Login via OIDC)
+name: Build and Deploy (Az Login via OIDC)
 
 # Define when this workflow will run
 on:

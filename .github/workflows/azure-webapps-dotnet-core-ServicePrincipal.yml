@@ -1,5 +1,5 @@
 # Name of the workflow as it appears in GitHub Actions UI
-name: Build and Deploy (Az CLI Login via Service Principal)
+name: Build and Deploy (Az Login via Service Principal)
 
 # Define when this workflow will run
 on:
@@ -73,12 +73,11 @@ jobs:
           path: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
       
           # 1. Log in to Azure completely passwordless using OIDC
-      - name: Az CLI Login via OIDC
+      - name: Az CLI Login via Service Principal
         uses: azure/login@v2
         with:
-          client-id: ${{ vars.AZURE_CLIENT_ID }}
-          tenant-id: ${{ vars.AZURE_TENANT_ID }}
-          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+          creds: ${{ vars.AZURE_CREDENTIALS }}
+          enable-AzPSSession: true           
 
       # 2. Deploy your application files securely
       - name: Deploy to Azure Web App
