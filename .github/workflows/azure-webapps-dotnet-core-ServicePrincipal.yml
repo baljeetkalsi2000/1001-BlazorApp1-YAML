@@ -42,11 +42,7 @@ jobs:
         run: dotnet build ${{ env.SOLUTION_PATH }} --configuration Release --no-restore
 
       # - name: Test
-      #   run: dotnet test ${{ env.SOLUTION_PATH }}
-      #     --configuration Release
-      #     --no-restore
-      #     --no-build
-      #     --verbosity normal
+      #   run: dotnet test ${{ env.SOLUTION_PATH }} --configuration Release --no-restore --no-build --verbosity normal
 
       - name: Publish
         run: dotnet publish ${{ env.PROJECT_PATH }} --configuration Release --no-restore --output ${{ env.PUBLISH_DIR }}
@@ -57,10 +53,10 @@ jobs:
         with:
           name: webapp  # Name of the artifact
           path: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
-          
- # Second job: deploy the application to Azure
-  deploy:
-    name: Download and Deploy to Azure
+
+#1.Microsoft_Entra_App(App Registration and SP without Secrets)
+  deploy_Microsoft_Entra_App:
+    name: Download and Deploy to Azure - 1. Microsoft_Entra_App(App Registration and SP without Secrets)
     runs-on: ubuntu-latest
     needs: [build-and-test] # This job depends on the build-and-test job
 
@@ -76,8 +72,9 @@ jobs:
       - name: Az CLI Login via Service Principal
         uses: azure/login@v2
         with:
-          creds: ${{ vars.AZURE_CREDENTIALS }}
-          enable-AzPSSession: true           
+          client-id: ${{ vars.MICROSOFT_ENTRA_APP_AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.MICROSOFT_ENTRA_APP_AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.MICROSOFT_ENTRA_APP_SUBSCRIPTION_ID }}
 
       # 2. Deploy your application files securely
       - name: Deploy to Azure Web App
@@ -86,7 +83,114 @@ jobs:
           app-name: 'DevopsNet'
           slot-name: 'Production'
           package: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }} # Path to your built application files     
+      
+      - name: logout
+        run: |
+          az logout     
 
+#2.Managed_Identity
+  deploy_Managed_Identity:
+    name: Download and Deploy to Azure - 2. Managed_Identity
+    runs-on: ubuntu-latest
+    needs: [deploy_Microsoft_Entra_App] #This job depends on the build-and-test job
+
+    steps:
+      # Retrieve the artifacts from the build job
+      - name: Download artifact from build job
+        uses: actions/download-artifact@v4
+        with:
+          name: webapp
+          path: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
+      
+          # 1. Log in to Azure completely passwordless using OIDC
+      - name: Az CLI Login via Service Principal
+        uses: azure/login@v2
+        with:
+          client-id: ${{ vars.MANAGED_IDENTITY_AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.MANAGED_IDENTITY_AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.MANAGED_IDENTITY_AZURE_SUBSCRIPTION_ID }}
+
+      # 2. Deploy your application files securely
+      - name: Deploy to Azure Web App
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: 'DevopsNet'
+          slot-name: 'Production'
+          package: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }} # Path to your built application files     
+      
+      - name: logout
+        run: |
+          az logout               
+
+#3.Service_Principal (With Secrets and App Registration)
+  deploy_Service_Principal:
+    name: Download and Deploy to Azure - 3. Service_Principal (With Secrets and App Registration)
+    runs-on: ubuntu-latest
+    needs: [deploy_Microsoft_Entra_App] #This job depends on the build-and-test job
+
+    steps:
+      # Retrieve the artifacts from the build job
+      - name: Download artifact from build job
+        uses: actions/download-artifact@v4
+        with:
+          name: webapp
+          path: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
+      
+          # 1. Log in to Azure completely passwordless using OIDC
+      - name: Az CLI Login via Service Principal
+        uses: azure/login@v2
+        with:
+          creds: ${{ vars.SERVICE_PRINCIPAL_SECRET_AZURE_CREDENTIALS_3 }}
+          enable-AzPSSession: true           
+          
+
+      # 2. Deploy your application files securely
+      - name: Deploy to Azure Web App
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: 'DevopsNet'
+          slot-name: 'Production'
+          package: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }} # Path to your built application files     
+      
+      - name: logout
+        run: |
+          az logout        
+
+
+
+  GetVariable:
+    name: Get Variable
+    runs-on: ubuntu-latest
+    # environment: dev
+    needs: [deploy_Service_Principal] # This job depends on the build-and-test job
+
+    steps:
+      - name: Get Env Variable Data
+        run: echo "Dev Environment Variable data ${{ vars.DEV_VAR }}"
+      - name: Get Env From Action Secret
+        run: echo "Action Variable data from ${{ vars.ACTION_GLOBAL_VAR }}"
+      - name: Get Env From Repo Secret
+        run: echo "Repo Secret ${{ secrets.ACTIONS_SECRETS}}"
+
+          # 1. Log in to Azure completely passwordless using OIDC
+      - name: Az CLI Login via OIDC
+        uses: azure/login@v2
+        with:
+          client-id: ${{ vars.MANAGED_IDENTITY_AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.MANAGED_IDENTITY_AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.MANAGED_IDENTITY_AZURE_SUBSCRIPTION_ID }}
+
+      - name: Pull Vault Secrets
+        uses: azure/get-keyvault-secrets@v1
+        id: kv-secrets
+        with:
+          keyvault: 'KeyVaultDevOps-Git' # Replace with your Key Vault name
+          secrets: |
+            Secrets1              
+      
+      - name: logout
+        run: |
+          az logout    
 
   # deploy2:
   #   name: Deploy to Azure
@@ -101,56 +205,6 @@ jobs:
   #         name: webapp
   #         path: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
 
-  GetVariable:
-    name: Get Variable
-    runs-on: ubuntu-latest
-    # environment: dev
-    needs: [deploy] # This job depends on the build-and-test job
-
-    steps:
-      - name: Get Env Variable Data
-        run: echo "Dev Environment Variable data ${{ vars.DEV_VAR }}"
-      - name: Get Env From Action Secret
-        run: echo "Action Variable data from ${{ vars.ACTION_GLOBAL_VAR }}"
-      - name: Get Env From Repo Secret
-        run: echo "Repo Secret ${{ secrets.ACTIONS_SECRETS}}"
-
-          # 1. Log in to Azure completely passwordless using OIDC
-      - name: Az CLI Login via OIDC
-        uses: azure/login@v2
-        with:
-          client-id: ${{ vars.AZURE_CLIENT_ID }}
-          tenant-id: ${{ vars.AZURE_TENANT_ID }}
-          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
-
-      - name: Pull Vault Secrets
-        uses: azure/get-keyvault-secrets@v1
-        id: kv-secrets
-        with:
-          keyvault: 'KeyVaultDevOps-Git' # Replace with your Key Vault name
-          secrets: |
-            Secrets1              
-
-      # 1. Log in securely to Azure without long-lived credentials
-      - name: Authenticate to Azure via OIDC
-        uses: azure/login@v2
-        with:
-          client-id: ${{ vars.AZURE_CLIENT_ID }}
-          tenant-id: ${{ vars.AZURE_TENANT_ID }}
-          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
-      
-      # 1. Log in to Azure completely passwordless using OIDC
-      - name: Az CLI Login via OIDC
-        uses: azure/login@v2
-        with:
-          client-id: ${{ vars.AZURE_CLIENT_ID }}
-          tenant-id: ${{ vars.AZURE_TENANT_ID }}
-          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
-      
-      - name: logout
-        run: |
-          az logout    
-      
 
   
   # deployFinal:
