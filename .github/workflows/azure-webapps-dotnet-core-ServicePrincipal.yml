@@ -17,9 +17,11 @@ env:
   PROJECT_PATH: './BlazorApp1/BlazorApp1/BlazorApp1.csproj'
   PUBLISH_DIR: './publish'
 
+#Azure OIDC-based Azure login
 permissions:
   id-token: write
   contents: read
+  
 # Define the separate jobs that make up this workflow
 jobs:
   # First job: build and test the application
