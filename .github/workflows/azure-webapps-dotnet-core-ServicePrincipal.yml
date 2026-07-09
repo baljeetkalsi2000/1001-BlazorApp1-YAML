@@ -163,7 +163,7 @@ jobs:
   GetVariable:
     name: Get Variable
     runs-on: ubuntu-latest
-    environment: dev
+    environment: Dev
     needs: [build-and-test] # This job depends on the build-and-test job
 
     steps:
