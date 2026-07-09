@@ -94,7 +94,7 @@ jobs:
   deploy_Managed_Identity:
     name: Download and Deploy to Azure - 2. Managed_Identity
     runs-on: ubuntu-latest
-    needs: [deploy_Microsoft_Entra_App] #This job depends on the build-and-test job
+    needs: [build-and-test] #This job depends on the build-and-test job
 
     steps:
       # Retrieve the artifacts from the build job
@@ -128,7 +128,7 @@ jobs:
   deploy_Service_Principal:
     name: Download and Deploy to Azure - 3. Service_Principal (With Secrets and App Registration)
     runs-on: ubuntu-latest
-    needs: [deploy_Microsoft_Entra_App] #This job depends on the build-and-test job
+    needs: [build-and-test] #This job depends on the build-and-test job
 
     steps:
       # Retrieve the artifacts from the build job
@@ -164,7 +164,7 @@ jobs:
     name: Get Variable
     runs-on: ubuntu-latest
     environment: dev
-    needs: [deploy_Service_Principal] # This job depends on the build-and-test job
+    needs: [build-and-test] # This job depends on the build-and-test job
 
     steps:
       - name: Get Env Variable Data
