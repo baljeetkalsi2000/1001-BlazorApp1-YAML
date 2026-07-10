@@ -164,7 +164,7 @@ jobs:
     name: Get Variable
     runs-on: ubuntu-latest
     environment: Dev
-    needs: [build-and-test] # This job depends on the build-and-test job-----
+    needs: [build-and-test] # This job depends on the build-and-test job
 
     steps:
       - name: Get Env Variable Data
