@@ -21,8 +21,8 @@ env:
 # Define the separate jobs that make up this workflow
 jobs:
   # First job: build and test the application
-  build-and-test:
-    name: Build and Test
+  PR-build-and-test:
+    name: PR-build-and-test
     runs-on: ubuntu-latest # Use Ubuntu runner for this job
 
     steps:
