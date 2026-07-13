@@ -1,3 +1,10 @@
+-- Execute this on the specific target database
+-- CREATE USER [DevOpsnet-ServicePrincipal] FROM EXTERNAL PROVIDER;
+-- ALTER ROLE db_owner ADD MEMBER [DevOpsnet-ServicePrincipal];
+
+--------------------------------------------------------------------
+
+
 SELECT 
     roles.name AS RoleName,
     members.name AS MemberName,
@@ -9,6 +16,20 @@ INNER JOIN sys.database_principals AS members
     ON rm.member_principal_id = members.principal_id
 ORDER BY RoleName, MemberName;
 
--- Execute this on the specific target database
-CREATE USER [DevOpsnet-ServicePrincipal] FROM EXTERNAL PROVIDER;
-ALTER ROLE db_owner ADD MEMBER [DevOpsnet-ServicePrincipal];
+
+----------------------------------------------------------
+
+SELECT 
+ DB_NAME() AS [DatabaseName],
+name AS [PrincipalName],
+type_desc AS [UserType],
+authentication_type_desc AS [AuthenticationType],
+create_date AS [CreationDate],
+modify_date AS [ModificationDate]
+FROM sys.database_principals
+-- WHERE name = 'DevOpsnet-ServicePrincipal'
+--WHERE authentication_type_desc = 'EXTERNAL';
+
+----------------------------------------------------------
+
+
