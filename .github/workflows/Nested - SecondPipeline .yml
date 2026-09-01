@@ -14,6 +14,10 @@ on:
       resource_group:
         required: true
         type: string
+      
+      AZURE_WEBAPP_NAME:
+        required: true
+        type: string  
 
 jobs:
   deploy:
@@ -25,3 +29,4 @@ jobs:
           echo "Environment: ${{ inputs.environment }}"
           echo "App Name: ${{ inputs.app_name }}"
           echo "Resource Group: ${{ inputs.resource_group }}"
+          echo "Resource Group: ${{ inputs.AZURE_WEBAPP_NAME }}"

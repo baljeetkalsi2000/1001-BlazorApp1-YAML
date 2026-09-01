@@ -39,6 +39,7 @@ jobs:
       environment: ${{ inputs.environment }}
       app_name: ${{ vars.APP_NAME }}
       resource_group: ${{ vars.RESOURCE_GROUP }}
+      AZURE_WEBAPP_NAME: 'time-service'
 
     secrets: inherit
 
