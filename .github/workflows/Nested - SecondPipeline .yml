@@ -1,0 +1,27 @@
+name: Deploy Pipeline
+
+on:
+  workflow_call:
+    inputs:
+      environment:
+        required: true
+        type: string
+
+      app_name:
+        required: true
+        type: string
+
+      resource_group:
+        required: true
+        type: string
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Display Variables
+        run: |
+          echo "Environment: ${{ inputs.environment }}"
+          echo "App Name: ${{ inputs.app_name }}"
+          echo "Resource Group: ${{ inputs.resource_group }}"
