@@ -27,7 +27,8 @@ jobs:
   # First job: build and test the application
   build-and-test:
     name: Build and Test
-    runs-on: ubuntu-latest # Use Ubuntu runner for this job
+    # runs-on: ubuntu-latest # Use Ubuntu runner for this job
+    runs-on: windows-latest
 
     steps:
       - uses: actions/checkout@v4
