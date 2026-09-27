@@ -94,7 +94,7 @@ jobs:
         with:
           keyvault: 'GitKeyValut' # Replace with your Key Vault name
           secrets: |
-            ${{ env.ENV_NAME }}-data1: 'database' # Defines 'database' as the output key
+            ${{ env.ENV_NAME }}-data1
       
       - name: Use in inline script
         run: |
