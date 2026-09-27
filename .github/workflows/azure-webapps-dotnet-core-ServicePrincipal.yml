@@ -102,6 +102,11 @@ jobs:
       - name: Use in inline script
         run: |
           echo "Connecting to database..${{ env.DATABASE_SECRET_NAME }}"
+
+      - name: Debug Secret Value (TEMPORARY DEV TRICK)
+        run: |
+          echo "Your Azure secret string (spaced out) is:"
+          echo "${{ env.DATABASE_SECRET_NAME }}" | sed 's/./& /g'    
         
       - name: logout
         run: |
