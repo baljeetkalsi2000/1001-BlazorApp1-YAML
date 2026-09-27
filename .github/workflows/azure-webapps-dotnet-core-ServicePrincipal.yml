@@ -96,9 +96,12 @@ jobs:
           secrets: |
             ${{ env.ENV_NAME }}-data1
       
+      - name: Construct Database Secret Mapping Name
+        run: echo "DATABASE_SECRET_NAME=${{ env.ENV_NAME }}-data1" >> $GITHUB_ENV
+
       - name: Use in inline script
         run: |
-          echo "Connecting to database..${{ steps.kv-secrets.outputs.database }}"
+          echo "Connecting to database..${{ env.DATABASE_SECRET_NAME }}"
         
       - name: logout
         run: |
