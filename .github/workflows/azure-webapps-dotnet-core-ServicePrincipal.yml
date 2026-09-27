@@ -98,7 +98,7 @@ jobs:
       - name: Use in inline script
         run: |
           echo "Connecting to database..."
-          node db_migrate.js --token "${{ steps.kv-secrets.outputs.Secrets1 }}"     
+          node db_migrate.js --token "${{ steps.kv-secrets.outputs.dev-data1 }}"     
         
       - name: logout
         run: |
