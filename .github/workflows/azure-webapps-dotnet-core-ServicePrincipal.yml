@@ -91,9 +91,9 @@ jobs:
         uses: azure/get-keyvault-secrets@v1
         id: kv-secrets
         with:
-          keyvault: 'KeyVaultDevOps-Git' # Replace with your Key Vault name
+          keyvault: 'GitKeyValut' # Replace with your Key Vault name
           secrets: |
-           Secrets1     
+           dev-data1     
       
       - name: Use in inline script
         run: |
