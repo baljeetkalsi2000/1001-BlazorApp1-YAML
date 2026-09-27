@@ -16,6 +16,7 @@ env:
   SOLUTION_PATH: './BlazorApp1/BlazorApp1.sln'
   PROJECT_PATH: './BlazorApp1/BlazorApp1/BlazorApp1.csproj'
   PUBLISH_DIR: './publish'
+  ENV_NAME: 'dev'
 
 #Azure OIDC-based Azure login
 permissions:
@@ -93,11 +94,11 @@ jobs:
         with:
           keyvault: 'GitKeyValut' # Replace with your Key Vault name
           secrets: |
-           dev-data1     
+           database=${{env.ENV_NAME}}-data1
       
       - name: Use in inline script
         run: |
-          echo "Connecting to database..${{ steps.kv-secrets.outputs.dev-data1 }}"
+          echo "Connecting to database..${#database}"
         
       - name: logout
         run: |
