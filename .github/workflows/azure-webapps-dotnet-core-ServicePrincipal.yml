@@ -85,8 +85,21 @@ jobs:
         with:
           app-name: 'WebApp2000'
           slot-name: 'Production'
-          package: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }} # Path to your built application files     
+          package: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }} # Path to your built application files 
+
+      - name: Pull Vault Secrets
+        uses: azure/get-keyvault-secrets@v1
+        id: kv-secrets
+        with:
+          keyvault: 'KeyVaultDevOps-Git' # Replace with your Key Vault name
+          secrets: |
+           Secrets1     
       
+      - name: Use in inline script
+        run: |
+          echo "Connecting to database..."
+          node db_migrate.js --token "${{ steps.kv-secrets.outputs.Secrets1 }}"     
+        
       - name: logout
         run: |
           az logout     
