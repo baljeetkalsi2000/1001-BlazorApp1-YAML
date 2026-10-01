@@ -11,6 +11,7 @@ on:
         options:
           - dev
           - staging
+          - val
           - prod
         default: dev
         required: true  
@@ -51,7 +52,7 @@ jobs:
         shell: pwsh
         run: |
           throw "prod requires main; dev and staging require develop."
-          
+
       - name: Display selected environment
         run: |
          echo "Selected environment: ${{ env.ENV_NAME }}"
