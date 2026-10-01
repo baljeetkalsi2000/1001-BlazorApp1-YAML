@@ -50,12 +50,22 @@ jobs:
       - name: Display selected environment
         run: |
          echo "Selected environment: ${{ env.ENV_NAME }}"
-               
+
       - name: Validate environment and branch
-        if: ${{ (env.ENV_NAME == 'prod' && github.ref_name != 'main') || ((env.ENV_NAME == 'dev' || env.ENV_NAME == 'staging') && github.ref_name != 'develop') }}
         shell: pwsh
+        env:
+          DEPLOY_ENV: ${{ env.ENV_NAME }}
+          BRANCH_NAME: ${{ github.ref_name }}
         run: |
-          throw "prod requires main; dev and staging require develop."
+          Write-Host "Environment: $env:DEPLOY_ENV; branch: $env:BRANCH_NAME"
+
+          if ($env:DEPLOY_ENV -eq 'prod' -and $env:BRANCH_NAME -ne 'main') {
+            throw "prod requires the main branch."
+          }
+
+          if ($env:DEPLOY_ENV -in @('dev', 'staging') -and $env:BRANCH_NAME -ne 'develop') {
+            throw "dev and staging require the develop branch."
+          }
 
 
 
