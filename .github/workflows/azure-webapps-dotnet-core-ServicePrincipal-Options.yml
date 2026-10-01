@@ -46,16 +46,18 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-      
+
+      - name: Display selected environment
+        run: |
+         echo "Selected environment: ${{ env.ENV_NAME }}"
+               
       - name: Validate environment and branch
         if: ${{ (env.ENV_NAME == 'prod' && github.ref_name != 'main') || ((env.ENV_NAME == 'dev' || env.ENV_NAME == 'staging') && github.ref_name != 'develop') }}
         shell: pwsh
         run: |
           throw "prod requires main; dev and staging require develop."
 
-      - name: Display selected environment
-        run: |
-         echo "Selected environment: ${{ env.ENV_NAME }}"
+
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
