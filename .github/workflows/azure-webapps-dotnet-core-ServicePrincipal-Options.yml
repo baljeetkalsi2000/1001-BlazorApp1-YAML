@@ -17,6 +17,7 @@ on:
   push:
     branches:
        - main # Run automatically when code is pushed to main branch
+       - develop # Run automatically when code is pushed to main branch
   
 # Environment variables used throughout the workflow
 env:
