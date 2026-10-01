@@ -60,11 +60,13 @@ jobs:
           Write-Host "Environment: $env:DEPLOY_ENV; branch: $env:BRANCH_NAME"
 
           if ($env:DEPLOY_ENV -eq 'prod' -and $env:BRANCH_NAME -ne 'main') {
-            throw "prod requires the main branch."
+             Write-Error  "prod requires the main branch."
+             exit 1
           }
 
           if ($env:DEPLOY_ENV -in @('dev', 'staging') -and $env:BRANCH_NAME -ne 'develop') {
-            throw "dev and staging require the develop branch."
+            Write-Error "dev and staging require the develop branch."
+            exit 1
           }
 
 
